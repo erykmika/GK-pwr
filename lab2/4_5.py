@@ -58,19 +58,22 @@ def draw_recursively(x, y, a, b, sim=1):
 
     draw_rectangle(x + new_width, y + new_height, new_width, new_height)
     
-    # row 1 / wiersz 1
-    draw_recursively(x, y + 0.6666 * b, new_width, new_height, sim-1)
-    draw_recursively(x + 0.3333 * a, y + 0.6666 * b, new_width, new_height, sim-1)
-    draw_recursively(x + 0.6666 * a, y + 0.6666 * b, new_width, new_height, sim-1)
-    
-    # row 2 / wiersz 2 (w srodku prostokat/kwadrat z poprzedniej iteracji)
-    draw_recursively(x, y + 0.3333 * b, new_width, new_height, sim-1)
-    draw_recursively(x + 0.6666 * a, y + 0.3333 * b, new_width, new_height, sim-1)
+    # Wspolrzedne x to po kolei wspolrzedna x poczatku, 1/3 oraz 2/3 czesci boku wiekszego kwadratu
 
-    # row 3 / wiersz 3
-    draw_recursively(x, y, new_width, new_height, sim-1)
-    draw_recursively(x + 0.3333 * a, y, new_width, new_height, sim-1)
-    draw_recursively(x + 0.6666 * a, y, new_width, new_height, sim-1)
+    # row 1 / wiersz 1 - od gory - wierzcholki kwadratow o wspolrzednych y w 2/3 czesci boku pionowego (y + 2*0.3333*b)
+    draw_recursively(x,                 y + 2 * new_height, new_width, new_height, sim-1)
+    draw_recursively(x + new_width,     y + 2 * new_height, new_width, new_height, sim-1)
+    draw_recursively(x + 2 * new_width, y + 2 * new_height, new_width, new_height, sim-1)
+    
+    # row 2 / wiersz 2 - wierzcholki kwadratow o wspolrzednych y w 1/3 czesci boku pionowego (y + 0.3333*b)
+    draw_recursively(x,                y + new_height, new_width, new_height, sim-1)
+    # w srodku prostokat/kwadrat z poprzedniej iteracji
+    draw_recursively(x + 2* new_width, y + new_height, new_width, new_height, sim-1)
+
+    # row 3 / wiersz 3 - wierzcholki kwadratow o wspolrzednych y takich samych jak wiekszy kwadrat (y)
+    draw_recursively(x,                y, new_width, new_height, sim-1)
+    draw_recursively(x + new_width,    y, new_width, new_height, sim-1)
+    draw_recursively(x + 2* new_width, y, new_width, new_height, sim-1)
 
 
 def update_viewport(window, width, height):
