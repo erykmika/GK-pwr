@@ -22,6 +22,7 @@ def render(time):
 
 
 def draw_rectangle(x, y, a, b, d=0.0):
+    # Inicjalizacja generatora liczb losowych ziarnem d
     random.seed(d)
 
     glClear(GL_COLOR_BUFFER_BIT)

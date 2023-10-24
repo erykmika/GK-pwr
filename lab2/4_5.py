@@ -6,6 +6,7 @@ from glfw.GLFW import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+# Wspolrzedne oraz dlugosci bokow najwiekszego kwadratu
 x = -80
 y = -80
 a = -2 * x
@@ -28,6 +29,7 @@ def render(time):
     draw_rectangle(x, y, a, b)
     # Rysujemy "dziury" wewnatrz kwadratu
     glColor3f(1, 1, 1)
+    # Wykorzystujemy argument podany w wierszu polecen/terminalu
     draw_recursively(x, y, a, b, int(sys.argv[1]))
 
 
@@ -50,9 +52,11 @@ def draw_rectangle(x, y, a, b):
 
 def draw_recursively(x, y, a, b, sim=1):
 
+    # Warunek zakonczenia rekurencji
     if sim <= 0:
         return
     
+    # 1/3 wymiarow wiekszego kwadratu
     new_width = 0.3333 * a
     new_height = 0.3333 * b
 
