@@ -8,7 +8,7 @@ from glfw.GLFW import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-N = 50
+N = 30
 
 tab = [[[0] * 3 for i in range(N)] for j in range(N)]
 
@@ -32,15 +32,23 @@ for i in range(N):
 
 random.seed(None)
 
-# Tablice wartosci kolorow rgb dla poszczegolnych paskow jaja
-r = []
-g = []
-b = []
+# Wyznaczamy tablice kolorow wierzcholkow trojkatow - dzieki temu nie bedzie migotania
+# (brak zmian kolorow przy wielokrotnym wywolywaniu funkcji render)
+a1, b1, c1, a2, b2, c2 = [], [], [], [], [], []
+d1, e1, f1 = [], [], []
 
-for i in range(N-1):
-    r.append(random.randint(0,255)/255)
-    g.append(random.randint(0,255)/255)
-    b.append(random.randint(0,255)/255)
+random.seed(None)
+
+for i in range((N-1)*(N-1)):
+    a1.append(random.randint(0,255)/255)
+    b1.append(random.randint(0,255)/255)
+    c1.append(random.randint(0,255)/255)
+    a2.append(random.randint(0,255)/255)
+    b2.append(random.randint(0,255)/255)
+    c2.append(random.randint(0,255)/255)
+    d1.append(random.randint(0,255)/255)
+    e1.append(random.randint(0,255)/255)
+    f1.append(random.randint(0,255)/255)
 
 def spin(angle):
     glRotatef(angle, 1.0, 0.0, 0.0)
@@ -75,7 +83,6 @@ def axes():
 
     glEnd()
 
-
 def render(time):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -84,12 +91,16 @@ def render(time):
     colorIndex = 0
     for j in range(N-1):
         glBegin(GL_TRIANGLE_STRIP)
-        glColor3f(r[j], g[j], b[j])
         for i in range(N-1):
+            glColor3f(d1[colorIndex], e1[colorIndex], f1[colorIndex])
             glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
+            glColor3f(a1[colorIndex], b1[colorIndex], c1[colorIndex])
             glVertex3f(tab[i+1][j][0], tab[i+1][j][1], tab[i+1][j][2])
+            glColor3f(a2[colorIndex], b2[colorIndex], c2[colorIndex])
             glVertex3f(tab[i][j+1][0], tab[i][j+1][1], tab[i][j+1][2])
+            glColor3f(d1[colorIndex], e1[colorIndex], f1[colorIndex])
             glVertex3f(tab[i+1][j+1][0], tab[i+1][j+1][1], tab[i+1][j+1][2])
+            colorIndex+=1
         glEnd()
     glFlush()
 
