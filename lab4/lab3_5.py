@@ -23,7 +23,7 @@ scale = 1.0
 
 
 def startup():
-    update_viewport(None, 400, 400)
+    update_viewport(None, 800, 800)
     glClearColor(0.0, 0.0, 0.0, 1.0)
     glEnable(GL_DEPTH_TEST)
 
@@ -100,11 +100,9 @@ def render(time):
     if left_mouse_button_pressed:
         phi += delta_y * pix2angle
         theta += delta_x * pix2angle
+    # Zmiana skali, gdy PPM wcisniety
     if right_mouse_button_pressed:
-        #scale += 0.1/(delta_x * pix2angle) if delta_x != 0 else 0
-        scale += 0.025 * delta_x
-        # Debugowanie
-        #print("PPM")
+        scale = scale + 0.015 * delta_x if scale + 0.015 * delta_x > 0 else scale
 
     # Obrocenie
     glRotatef(phi, 1.0, 0.0, 0.0)
@@ -175,7 +173,7 @@ def main():
     if not glfwInit():
         sys.exit(-1)
 
-    window = glfwCreateWindow(400, 400, __file__, None, None)
+    window = glfwCreateWindow(800, 800, __file__, None, None)
     if not window:
         glfwTerminate()
         sys.exit(-1)

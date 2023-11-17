@@ -20,6 +20,7 @@ R = 1.0
 x_eye = 0
 y_eye = 0
 z_eye = 10
+MAX_DISTANCE = 3.0
 
 left_mouse_button_pressed = 0
 right_mouse_button_pressed = 0
@@ -28,6 +29,9 @@ mouse_y_pos_old = 0
 delta_x = 0
 delta_y = 0
 scale = 1.0
+
+a = None
+mvm = None
 
 
 def startup():
@@ -112,9 +116,19 @@ def render(time):
     if right_mouse_button_pressed:
         phi += delta_y * pix2angle
         theta += delta_x * pix2angle
-
+        #if right_mouse_button_pressed:
+        #scale += 0.1/(delta_x * pix2angle) if delta_x != 0 else 0
+        #scale += 0.025 * delta_x
+        # Debugowanie
+        #print("PPM")
         R += delta_x * 0.02 * pix2angle
-        
+        R += delta_x * 0.02 * pix2angle
+        if R < 1.0:
+            R = 1.0
+        if R > MAX_DISTANCE:
+            R = MAX_DISTANCE
+        phi%=360
+        theta%=360
         x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
         y_eye = R * sin(phi*(pi/180))
         z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
@@ -126,7 +140,11 @@ def render(time):
     # Skalowanie
     #glScalef(scale, scale, scale)
 
-    gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, 0, 1, 0)
+    
+
+    
+
+    gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, mvm[1], mvm[5], mvm[9])
 
     axes()
     example_object()
@@ -189,6 +207,7 @@ def mouse_button_callback(window, button, action, mods):
 
 def main():
     global action
+    global mvm
     if not glfwInit():
         sys.exit(-1)
 
@@ -203,6 +222,9 @@ def main():
     glfwSetCursorPosCallback(window, mouse_motion_callback)
     glfwSetMouseButtonCallback(window, mouse_button_callback)
     glfwSwapInterval(1)
+
+    a = (GLfloat * 16)()
+    mvm = glGetFloatv(GL_MODELVIEW_MATRIX, a)
 
     startup()
     while not glfwWindowShouldClose(window):
