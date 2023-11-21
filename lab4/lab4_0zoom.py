@@ -108,17 +108,16 @@ def render(time):
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
-    # Zmieniamy katy polozenia, gdy PPM wcisniety
     if right_mouse_button_pressed:
+        R += delta_x * 0.015 * pix2angle
+    # Zmieniamy katy polozenia, gdy PPM wcisniety
+    elif left_mouse_button_pressed:
         phi += delta_y * pix2angle
         theta += delta_x * pix2angle
-
-        R += delta_x * 0.015 * pix2angle
         
-        x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
-        y_eye = R * sin(phi*(pi/180))
-        z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
-
+    x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
+    y_eye = R * sin(phi*(pi/180))
+    z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
 
     # Obrocenie
     #glRotatef(phi, 1.0, 0.0, 0.0)

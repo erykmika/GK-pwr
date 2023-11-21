@@ -20,9 +20,11 @@ R = 1.0
 x_eye = 0
 y_eye = 0
 z_eye = 10
+MAX_DISTANCE = 3.0
 
 left_mouse_button_pressed = 0
 right_mouse_button_pressed = 0
+key_pressed = 0
 mouse_x_pos_old = 0
 mouse_y_pos_old = 0
 delta_x = 0
@@ -101,6 +103,7 @@ def render(time):
     global x_eye
     global y_eye
     global z_eye
+    global key_pressed
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -108,26 +111,27 @@ def render(time):
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
-    # Zmieniamy katy polozenia, gdy PPM wcisniety
-    if right_mouse_button_pressed:
+    # Aktualizujemy wartosci, gdy klawisz wcisniety
+    if left_mouse_button_pressed or key_pressed:
         phi += delta_y * pix2angle
         theta += delta_x * pix2angle
-
+        phi%=360
+        theta%=360
+    elif right_mouse_button_pressed:
+        # Ruch kamery
         R += delta_x * 0.015 * pix2angle
-        
-        x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
-        y_eye = R * sin(phi*(pi/180))
-        z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
-
-
-    # Obrocenie
-    #glRotatef(phi, 1.0, 0.0, 0.0)
-    #glRotatef(theta, 0.0, 1.0, 0.0)
-    # Skalowanie
-    #glScalef(scale, scale, scale)
-
+        if R < 1.0:
+            R = 1.0
+        if R > MAX_DISTANCE:
+            R = MAX_DISTANCE
+    if key_pressed:
+        #Obrocenie
+        glRotatef(phi, 1.0, 0.0, 0.0)
+        glRotatef(theta, 0.0, 1.0, 0.0)
+    x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
+    y_eye = R * sin(phi*(pi/180))
+    z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
     gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, 0, 1, 0)
-
     axes()
     example_object()
 
@@ -153,8 +157,13 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
+    global key_pressed
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
+    elif key == GLFW_KEY_X and action == GLFW_REPEAT:
+        key_pressed = 1
+    else:
+        key_pressed = 0
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
@@ -189,6 +198,7 @@ def mouse_button_callback(window, button, action, mods):
 
 def main():
     global action
+    global mvm
     if not glfwInit():
         sys.exit(-1)
 
