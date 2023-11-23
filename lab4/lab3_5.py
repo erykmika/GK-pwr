@@ -98,15 +98,15 @@ def render(time):
 
     # Zmieniamy katy polozenia, gdy LPM wcisniety
     if left_mouse_button_pressed:
-        phi += delta_y * pix2angle
         theta += delta_x * pix2angle
+        phi += delta_y * pix2angle
     # Zmiana skali, gdy PPM wcisniety
     if right_mouse_button_pressed:
         scale = scale + 0.015 * delta_x if scale + 0.015 * delta_x > 0 else scale
 
-    # Obrocenie
-    glRotatef(phi, 1.0, 0.0, 0.0)
+     # Obrocenie
     glRotatef(theta, 0.0, 1.0, 0.0)
+    glRotatef(phi, 1.0, 0.0, 0.0)
     # Skalowanie
     glScalef(scale, scale, scale)
 

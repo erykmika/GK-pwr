@@ -21,7 +21,7 @@ delta_y = 0
 
 
 def startup():
-    update_viewport(None, 400, 400)
+    update_viewport(None, 800, 800)
     glClearColor(0.0, 0.0, 0.0, 1.0)
     glEnable(GL_DEPTH_TEST)
 
@@ -95,12 +95,12 @@ def render(time):
 
     # Zmieniamy katy polozenia, gdy LPM wcisniety
     if left_mouse_button_pressed:
-        phi += delta_y * pix2angle
         theta += delta_x * pix2angle
+        phi += delta_y * pix2angle
 
     # Obrocenie
-    glRotatef(phi, 1.0, 0.0, 0.0)
     glRotatef(theta, 0.0, 1.0, 0.0)
+    glRotatef(phi, 1.0, 0.0, 0.0)
 
     axes()
     example_object()
@@ -158,7 +158,7 @@ def main():
     if not glfwInit():
         sys.exit(-1)
 
-    window = glfwCreateWindow(400, 400, __file__, None, None)
+    window = glfwCreateWindow(800, 800, __file__, None, None)
     if not window:
         glfwTerminate()
         sys.exit(-1)

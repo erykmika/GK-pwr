@@ -13,7 +13,7 @@ from math import pi
 
 viewer = [0.0, 0.0, 10.0]
 
-theta = 0.0
+theta = 90.0
 phi = 0.0
 pix2angle = 1.0
 R = 1.0
@@ -108,25 +108,26 @@ def render(time):
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
-    # Zmieniamy katy polozenia, gdy PPM wcisniety
-    if right_mouse_button_pressed:
-        phi += delta_y * pix2angle
-        theta += delta_x * pix2angle
-
-        R += delta_x * 0.015 * pix2angle
-        
-        x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
-        y_eye = R * sin(phi*(pi/180))
-        z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
-
+    if right_mouse_button_pressed or left_mouse_button_pressed:
+        # Zmiana R, gdy PPM wcisniety - przyblizanie/oddalanie - bez ograniczen w tym zadaniu
+        if right_mouse_button_pressed:
+            R += delta_x * 0.03 * pix2angle
+        # Ruch kamery wokol modelu, gdy LPM wcisniety
+        elif left_mouse_button_pressed:
+            phi += delta_y * pix2angle
+            theta += delta_x * pix2angle
+        # Obliczenie argumentow funkcji gluLookAt
+        x_eye = R * cos(pi*theta/180) * cos(pi*phi/180)
+        y_eye = R * sin(pi*phi/180)
+        z_eye = R * sin(pi*theta/180) * cos(pi*phi/180)
+    # Przeksztalcenie patrzenia na podstawie obliczonych wartosci
+    gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, 0, 1, 0)
 
     # Obrocenie
     #glRotatef(phi, 1.0, 0.0, 0.0)
     #glRotatef(theta, 0.0, 1.0, 0.0)
     # Skalowanie
     #glScalef(scale, scale, scale)
-
-    gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, 0, 1, 0)
 
     axes()
     example_object()

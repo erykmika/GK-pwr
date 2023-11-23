@@ -13,23 +13,27 @@ from math import pi
 
 viewer = [0.0, 0.0, 10.0]
 
-theta = 0.0
+theta = 90.0
 phi = 0.0
 pix2angle = 1.0
 R = 1.0
 x_eye = 0
 y_eye = 0
 z_eye = 10
-MAX_DISTANCE = 3.0
+MIN_DISTANCE = 1
+MAX_DISTANCE = 10.0
 
 left_mouse_button_pressed = 0
 right_mouse_button_pressed = 0
-key_pressed = 0
+state = True
 mouse_x_pos_old = 0
 mouse_y_pos_old = 0
 delta_x = 0
 delta_y = 0
 scale = 1.0
+upY = 1.0
+phi_max = -90.0
+phi_min = 90.0
 
 
 def startup():
@@ -103,35 +107,53 @@ def render(time):
     global x_eye
     global y_eye
     global z_eye
-    global key_pressed
+    global state
+    global upY
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-
-    gluLookAt(viewer[0], viewer[1], viewer[2],
-              0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-
-    # Aktualizujemy wartosci, gdy klawisz wcisniety
-    if right_mouse_button_pressed or key_pressed:
-        phi += delta_y * pix2angle
+    gluLookAt(viewer[0], viewer[1], viewer[2], 
+              0.0, 0.0, 0.0, 0.0, upY, 0.0)
+    # Jezeli state to True - tryb ruchu kamery, w przeciwnym wypadku - obracanie obiektu
+    if state:
+        if right_mouse_button_pressed or left_mouse_button_pressed:
+            # Obliczenie argumentow funkcji gluLookAt
+            x_eye = R * cos(pi*theta/180) * cos(pi*phi/180)
+            y_eye = R * sin(pi*phi/180)
+            z_eye = R * sin(pi*theta/180) * cos(pi*phi/180)
+            # Zmiana R, gdy PPM wcisniety - przyblizanie/oddalanie - bez ograniczen w tym zadaniu
+            if right_mouse_button_pressed:
+                R += delta_x * 0.03 * pix2angle
+                print(R)
+            if R < MIN_DISTANCE:
+                R = MIN_DISTANCE
+            if R > MAX_DISTANCE:
+                R = MAX_DISTANCE
+            # Ruch kamery wokol modelu, gdy LPM wcisniety
+            elif left_mouse_button_pressed:
+                phi += delta_y * pix2angle
+                theta += delta_x * pix2angle
+                #phi = max(phi_min, min(phi, phi_max))
+                if phi<phi_min:
+                    phi = phi_min
+                elif phi>phi_max:
+                    phi = phi_max
+            #phi %= 360
+            #theta %= 360
+        # Przeksztalcenie patrzenia na podstawie obliczonych wartosci
+        gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, 0, upY, 0)
+    else:
+        #gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
         theta += delta_x * pix2angle
-        R += delta_x * 0.015 * pix2angle
-        if R < 1.0:
-            R = 1.0
-        if R > MAX_DISTANCE:
-            R = MAX_DISTANCE
-        phi%=360
-        theta%=360
-    if right_mouse_button_pressed:
-        # Ruch kamery
-        x_eye = R * cos(theta * (pi/180)) * sin(phi*(pi/180))
-        y_eye = R * sin(phi*(pi/180))
-        z_eye = R * sin(theta * (pi/180)) * cos(phi*(pi/180))
-    elif key_pressed:
+        phi += delta_y * pix2angle
+        if phi<phi_min:
+            phi = phi_min
+        elif phi>phi_max:
+            phi = phi_max
         #Obrocenie
+        glRotatef(theta, 0.0, 1.0, 0.0) 
         glRotatef(phi, 1.0, 0.0, 0.0)
-        glRotatef(theta, 0.0, 1.0, 0.0)
-    gluLookAt(x_eye, y_eye, z_eye, 0, 0, 0, 0, 1, 0)
+
     axes()
     example_object()
 
@@ -158,12 +180,11 @@ def update_viewport(window, width, height):
 
 def keyboard_key_callback(window, key, scancode, action, mods):
     global key_pressed
+    global state
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
-    elif key == GLFW_KEY_X and action == GLFW_REPEAT:
-        key_pressed = 1
-    else:
-        key_pressed = 0
+    elif key == GLFW_KEY_X and action == GLFW_PRESS:
+        state = not state
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
