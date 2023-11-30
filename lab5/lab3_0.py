@@ -21,6 +21,7 @@ mat_diffuse = [1.0, 1.0, 1.0, 1.0]
 mat_specular = [1.0, 1.0, 1.0, 1.0]
 mat_shininess = 20.0
 
+# Zrodlo swiatla 0
 light_ambient = [0.1, 0.1, 0.0, 1.0]
 light_diffuse = [0.8, 0.8, 0.0, 1.0]
 light_specular = [1.0, 1.0, 1.0, 1.0]
@@ -30,8 +31,7 @@ light_position = [0.0, 0.0, 10.0, 1.0]
 light_ambient1 = [0.02, 0.2, 0.0, 1.0]
 light_diffuse1 = [1.0, 0.0, 1.0, 1.0]
 light_specular1 = [1.0, 1.0, 1.0, 1.0]
-light_position1 = [-10.0, 5.0, 0.0, 1.0]
-
+light_position1 = [-10.0, 8.0, 0.0, 1.0]
 
 att_constant = 1.0
 att_linear = 0.05
