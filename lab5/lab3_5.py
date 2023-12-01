@@ -99,7 +99,7 @@ def render(time):
         current_mode[index] = min(current_mode[index] + 0.01, 1.0)
         print(index, current_mode, sep=" ")
     elif key_down:
-        current_mode[index] = max(current_mode[index] - 0.01, 0.0)
+        current_mode[index] = max(current_mode[index] - 0.01, -1.0)
         print(index, current_mode, sep=" ")
     
     # Aktualizacja skladowych koloru swiatla
@@ -168,6 +168,8 @@ def keyboard_key_callback(window, key, scancode, action, mods):
         index = 1
     if key == GLFW_KEY_2 and action == GLFW_PRESS:
         index = 2
+    if key == GLFW_KEY_3 and action == GLFW_PRESS:
+        index = 3
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
