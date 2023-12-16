@@ -21,7 +21,6 @@ for i in range(N):
     u.append(i/(N-1))
     v.append(i/(N-1))
 
-#numOfZeroes = 0
 
 # Obliczamy wartosci x, y, z
 for i in range(N):
@@ -29,49 +28,24 @@ for i in range(N):
         tab[i][j][0] =  (-90 * u[i]**5 + 225 * u[i]**4 - 270 * u[i]**3 + 180 * u[i]*u[i] - 45*u[i]) * cos(pi * v[j])
         tab[i][j][1] = 160 * u[i] ** 4 - 320 * u[i] ** 3 + 160 * u[i] * u[i] - 5
         tab[i][j][2] =  (-90 * u[i]**5 + 225 * u[i]**4 - 270 * u[i]**3 + 180 * u[i]*u[i] - 45*u[i]) * sin(pi * v[j])
-
-        # Wektory normalne
+        # Pochodne czastkowe obliczone wg wzorow
         xu = (-450 * u[i]**4 + 900 * u[i]**3 - 810 * u[i]**2 + 360 * u[i] - 45) * cos(pi * v[j])
         xv = pi * (90 * u[i]**5 - 225 * u[i]**4 + 270 * u[i]**3 - 180 * u[i]**2 + 45 * u[i]) * sin(pi * v[j])
         yu = 640 * u[i]**3 - 960 * u[i]**2 + 320 * u[i]
         yv = 0
         zu = (-450 * u[i]**4 + 900 * u[i]**3 - 810 * u[i]**2 + 360 * u[i] - 45) * sin(pi * v[j])
         zv = -pi * (90 * u[i]**5 - 225 * u[i]**4 + 270 * u[i]**3 - 180 * u[i]**2 + 45 * u[i]) * cos(pi * v[j])
-
+        # Wartosci skladowych wektora normalnego
         a = yu * zv - zu * yv
         b = zu * xv - xu * zv
         c = xu * yv - yu * xv
-
+        # Dlugosc wektora normalnego
         vector_length = sqrt(a*a+b*b+c*c)
-        #numOfZeroes += 1 if vector_length==0 else 0
-
+        # Normalizacja
         normal[i][j][0] = a / vector_length if vector_length!=0 else 0 
         normal[i][j][1] = b / vector_length if vector_length!=0 else 0 
         normal[i][j][2] = c / vector_length if vector_length!=0 else 0
 
-
-#print(numOfZeroes)
-
-# Debugowanie
-#print(u[N-1], v[N-1])
-
-random.seed(None)
-
-# Wyznaczamy tablice kolorow wierzcholkow trojkatow - dzieki temu nie bedzie migotania
-# (brak zmian kolorow przy wielokrotnym wywolywaniu funkcji render)
-a1, b1, c1, a2, b2, c2 = [], [], [], [], [], []
-d1, e1, f1 = [], [], []
-
-for i in range((N-1)*(N-1)):
-    a1.append(random.randint(0,255)/255)
-    b1.append(random.randint(0,255)/255)
-    c1.append(random.randint(0,255)/255)
-    a2.append(random.randint(0,255)/255)
-    b2.append(random.randint(0,255)/255)
-    c2.append(random.randint(0,255)/255)
-    d1.append(random.randint(0,255)/255)
-    e1.append(random.randint(0,255)/255)
-    f1.append(random.randint(0,255)/255)
 
 viewer = [0.0, 0.0, 10.0]
 
@@ -88,10 +62,6 @@ mouse_y_pos_old = 0
 delta_x = 0
 delta_y = 0
 LIGHT_DISTANCE = 5
-x_s = 0
-y_s = 0
-z_s = 0
-light_choice = 0
 
 mat_ambient = [1.0, 1.0, 1.0, 1.0]
 mat_diffuse = [1.0, 1.0, 1.0, 1.0]
@@ -142,19 +112,19 @@ def startup():
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, att_quadratic)
 
     # Zrodlo swiatla 1
-    #glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient1)
-    #glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1)
-    #glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1)
-    #glLightfv(GL_LIGHT1, GL_POSITION, light_position1)
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient1)
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1)
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1)
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1)
 
-    #glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, att_constant)
-    #glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, att_linear)
-    #glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, att_quadratic)
+    glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, att_constant)
+    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, att_linear)
+    glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, att_quadratic)
 
     glShadeModel(GL_SMOOTH)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
-    #glEnable(GL_LIGHT1)
+    glEnable(GL_LIGHT1)
 
 
 def shutdown():
@@ -172,24 +142,18 @@ def render(time):
     gluLookAt(viewer[0], viewer[1], viewer[2],
               0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
     
-    #if right_mouse_button_pressed:
-    #    theta1 += delta_x * pix2angle
-    #    phi1 += delta_y * pix2angle
+
     spin(time * 180 / 3.1415)
     colorIndex = 0
     for j in range(N-1):
         glBegin(GL_TRIANGLE_STRIP)
         for i in range(N-1):
-            glColor3f(d1[colorIndex], e1[colorIndex], f1[colorIndex])
             glNormal(normal[i][j][0], normal[i][j][1], normal[i][j][2])
             glVertex3f(tab[i][j][0], tab[i][j][1], tab[i][j][2])
-            glColor3f(a1[colorIndex], b1[colorIndex], c1[colorIndex])
             glNormal(normal[i+1][j][0], normal[i+1][j][1], normal[i+1][j][2])
             glVertex3f(tab[i+1][j][0], tab[i+1][j][1], tab[i+1][j][2])
-            glColor3f(a2[colorIndex], b2[colorIndex], c2[colorIndex])
             glNormal(normal[i][j+1][0], normal[i][j+1][1], normal[i][j+1][2])
             glVertex3f(tab[i][j+1][0], tab[i][j+1][1], tab[i][j+1][2])
-            glColor3f(d1[colorIndex], e1[colorIndex], f1[colorIndex])
             glNormal(normal[i+1][j+1][0], normal[i+1][j+1][1], normal[i+1][j+1][2])
             glVertex3f(tab[i+1][j+1][0], tab[i+1][j+1][1], tab[i+1][j+1][2])
             colorIndex+=1

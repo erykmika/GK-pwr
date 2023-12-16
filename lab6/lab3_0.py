@@ -6,6 +6,8 @@ from glfw.GLFW import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+from PIL import Image
+
 
 viewer = [0.0, 0.0, 10.0]
 
@@ -30,17 +32,6 @@ att_constant = 1.0
 att_linear = 0.05
 att_quadratic = 0.001
 
-# Flagi - czy klawisze w gore/dol nacisniete
-key_down = False
-key_up = False
-# Flagi - czy modyfikowana dana skladowa
-specular = False
-ambient = False
-diffuse = False
-# Indeks modyfikowanego elementu listy skladowej
-index = 0
-# Modyfikowana lista wartosci skladowej koloru swiatla (referencja)
-current_mode = light_specular
 
 def startup():
     update_viewport(None, 800, 800)
@@ -52,7 +43,6 @@ def startup():
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
     glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess)
 
-    # Zrodlo swiatla
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
@@ -66,13 +56,26 @@ def startup():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
 
+    glEnable(GL_TEXTURE_2D)
+    glEnable(GL_CULL_FACE)
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+
+    image = Image.open("tekstura.tga")
+
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, 3, image.size[0], image.size[1], 0,
+        GL_RGB, GL_UNSIGNED_BYTE, image.tobytes("raw", "RGB", 0, -1)
+    )
+
 
 def shutdown():
     pass
 
 
 def render(time):
-    global theta, current_mode, index
+    global theta
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -83,37 +86,33 @@ def render(time):
     if left_mouse_button_pressed:
         theta += delta_x * pix2angle
 
-    # Wybor modyfikowanej skladowej
-    if specular:
-        print("Specular")
-        current_mode = light_specular
-    elif diffuse:
-        print("Diffuse")
-        current_mode = light_diffuse
-    elif ambient:
-        print("Ambient")
-        current_mode = light_ambient
-
-    # Zwiekszenie/zmniejszenie w zaleznosci od nacisnietego klawisza
-    if key_up:
-        current_mode[index] = min(current_mode[index] + 0.01, 1.0)
-        print(index, current_mode, sep=" ")
-    elif key_down:
-        current_mode[index] = max(current_mode[index] - 0.01, 0.0)
-        print(index, current_mode, sep=" ")
-    
-    # Aktualizacja skladowych koloru swiatla
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient)
-
     glRotatef(theta, 0.0, 1.0, 0.0)
 
-    quadric = gluNewQuadric()
-    gluQuadricDrawStyle(quadric, GLU_FILL)
-    gluSphere(quadric, 3.0, 30, 30)
-    gluDeleteQuadric(quadric)
+    glBegin(GL_TRIANGLES)
 
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-5.0, -5.0, 0.0)
+
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(5.0, -5.0, 0.0)
+
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-5.0, 5.0, 0.0)
+
+    glEnd()
+
+    glBegin(GL_TRIANGLES)
+
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(5.0, -5.0, 0.0)
+
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(5.0, 5.0, 0.0)
+
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-5.0, 5.0, 0.0)
+
+    glEnd()
     glFlush()
 
 
@@ -136,40 +135,8 @@ def update_viewport(window, width, height):
 
 
 def keyboard_key_callback(window, key, scancode, action, mods):
-    global key_down, key_up, specular, ambient, diffuse, current_mode, index
     if key == GLFW_KEY_ESCAPE and action == GLFW_PRESS:
         glfwSetWindowShouldClose(window, GLFW_TRUE)
-    # Obsluga klawiszy w gore/w dol
-    if key == GLFW_KEY_DOWN and action == GLFW_REPEAT:
-        key_down = True
-    else:
-        key_down = False
-    if key == GLFW_KEY_UP and action == GLFW_REPEAT:
-        key_up = True
-    else:
-        key_up = False
-    # Obsluga klawiszy zmieniajacych flagi wskazujace na modyfikowana obecnie skladowa
-    if key == GLFW_KEY_A and action == GLFW_PRESS:
-        ambient = True
-    else:
-        ambient = False
-    if key == GLFW_KEY_D and action == GLFW_PRESS:
-        diffuse = True
-    else:
-        diffuse = False
-    if key == GLFW_KEY_S and action == GLFW_PRESS:
-        specular = True
-    else:
-        specular = False
-    # Obsluga klawiszy zmieniajacych flagi wskazujace na indeks modyfikowanego elementu skladowej 
-    if key == GLFW_KEY_0 and action == GLFW_PRESS:
-        index = 0
-    if key == GLFW_KEY_1 and action == GLFW_PRESS:
-        index = 1
-    if key == GLFW_KEY_2 and action == GLFW_PRESS:
-        index = 2
-    if key == GLFW_KEY_3 and action == GLFW_PRESS:
-        index = 3
 
 
 def mouse_motion_callback(window, x_pos, y_pos):
