@@ -31,7 +31,6 @@ def compile_shaders():
         uniform mat4 M_matrix;
         uniform mat4 V_matrix;
         uniform mat4 P_matrix;
-
         out vec4 vertex_color;
 
         void main(void) {

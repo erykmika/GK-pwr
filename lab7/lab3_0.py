@@ -29,7 +29,6 @@ def compile_shaders():
         uniform mat4 M_matrix;
         uniform mat4 V_matrix;
         uniform mat4 P_matrix;
-        in vec4 vertex_color1;
         out vec4 vertex_color;
 
         void main(void) {
@@ -43,10 +42,8 @@ def compile_shaders():
 
         in vec4 vertex_color;
         out vec4 color;
-        out vec4 vertex_color1;
 
         void main(void) {
-            color = vec4(0.7, 0.7, 0.7, 1.0);
             color = vertex_color;
         }
     """
@@ -95,15 +92,13 @@ def startup():
         glGetString(GL_SHADING_LANGUAGE_VERSION).decode('UTF-8').split()[0]
     ))
 
-    update_viewport(None, 400, 400)
+    update_viewport(None, 800, 800)
     glEnable(GL_DEPTH_TEST)
 
     rendering_program = compile_shaders()
 
     vertex_array_object = glGenVertexArrays(1)
     glBindVertexArray(vertex_array_object)
-
-    #vertex_colors = numpy.array([0.5, 0.4, 0.3])
 
     vertex_positions = numpy.array([
         -0.25, +0.25, -0.25,
@@ -227,7 +222,7 @@ def main():
     # Poniższą linijkę odkomentować w przypadku pracy w systemie macOS!
     # glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
 
-    window = glfwCreateWindow(400, 400, __file__, None, None)
+    window = glfwCreateWindow(800, 800, __file__, None, None)
     if not window:
         glfwTerminate()
         sys.exit(-1)

@@ -37,13 +37,15 @@ def compile_shaders():
             // "Ziarna" do wyznaczenia liczb pseudolosowych - zalezne od id wierzcholka oraz obiektu
             int random_x = (gl_InstanceID + 1) * (gl_VertexID + 1);
             int random_y = (gl_InstanceID + 10) * (gl_VertexID + 10);
+            int random_z = (gl_InstanceID + 5) * (gl_VertexID + 5);
 
             /* 
-               Generatory liczb pseudolosowych - wariacja middle-square method.
+               Generatory liczb (cyfr) pseudolosowych - wariacja middle-square method.
                Wydobywane sa cyfry ze "srodka" liczb.
             */
-            random_x = (( random_x*random_x*random_x*random_x*random_x*random_x ) / 1000) % 10;
-            random_y = (( random_y*random_y*random_y*random_y*random_y*random_y ) / 1000) % 10;
+            random_x = (( random_x*random_x*random_x*random_x*random_x*random_x ) / 1000 ) % 10;
+            random_y = (( random_y*random_y*random_y*random_y*random_y*random_y ) / 1000 ) % 10;
+            random_z = (( random_z*random_z*random_z*random_z*random_z*random_z ) / 1000 ) % 10;
 
             // Przesuniecie w poziomie - modulo 10
             int x_shift = gl_InstanceID%10;
@@ -52,7 +54,10 @@ def compile_shaders():
 
             // Wynikowe polozenie - wprowadzone deformacje
             gl_Position = P_matrix * V_matrix * M_matrix * (
-            position +  vec4(x_shift + random_x/6, y_shift + random_y/6, 0, 0)
+            position +  vec4(x_shift + random_x/6,
+                             y_shift + random_y/6,
+                             random_z/6,
+                             0)
             );
             vertex_color = color;
         }

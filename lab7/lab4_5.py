@@ -33,7 +33,6 @@ def compile_shaders():
         uniform mat4 P_matrix;
         out vec4 vertex_color;
 
-
         void main(void) {
             // Przesuniecie w poziomie
             int x_shift = gl_InstanceID%10;
