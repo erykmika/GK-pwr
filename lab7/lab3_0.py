@@ -233,11 +233,14 @@ def main():
     glfwSwapInterval(1)
 
     startup()
-    while not glfwWindowShouldClose(window):
-        render(glfwGetTime())
-        glfwSwapBuffers(window)
-        glfwPollEvents()
-    shutdown()
+    try:
+        while not glfwWindowShouldClose(window):
+            render(glfwGetTime())
+            glfwSwapBuffers(window)
+            glfwPollEvents()
+        shutdown()
+    except:
+        pass
 
     glfwTerminate()
 

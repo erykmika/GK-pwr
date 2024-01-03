@@ -31,6 +31,7 @@ def compile_shaders():
         uniform mat4 M_matrix;
         uniform mat4 V_matrix;
         uniform mat4 P_matrix;
+        
         out vec4 vertex_color;
 
         void main(void) {
@@ -96,7 +97,6 @@ def startup():
     global vertex_array_object
     global vertex_buffer
     global color_buffer
-    global transform_buffer
 
     print("OpenGL {}, GLSL {}\n".format(
         glGetString(GL_VERSION).decode('UTF-8').split()[0],
@@ -251,11 +251,14 @@ def main():
     glfwSwapInterval(1)
 
     startup()
-    while not glfwWindowShouldClose(window):
-        render(glfwGetTime())
-        glfwSwapBuffers(window)
-        glfwPollEvents()
-    shutdown()
+    try:
+        while not glfwWindowShouldClose(window):
+            render(glfwGetTime())
+            glfwSwapBuffers(window)
+            glfwPollEvents()
+        shutdown()
+    except:
+        pass
 
     glfwTerminate()
 

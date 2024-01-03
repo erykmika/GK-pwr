@@ -113,7 +113,6 @@ def startup():
     global vertex_array_object
     global vertex_buffer
     global color_buffer
-    global transform_buffer
 
     print("OpenGL {}, GLSL {}\n".format(
         glGetString(GL_VERSION).decode('UTF-8').split()[0],
@@ -204,7 +203,6 @@ def shutdown():
 
 
 def render(time):
-    global index_randomizer
     glClearBufferfv(GL_COLOR, 0, [0.0, 0.0, 0.0, 1.0])
     glClearBufferfi(GL_DEPTH_STENCIL, 0, 1.0, 0)
 
@@ -224,6 +222,7 @@ def render(time):
     glUniformMatrix4fv(V_location, 1, GL_FALSE, glm.value_ptr(V_matrix))
     glUniformMatrix4fv(P_location, 1, GL_FALSE, glm.value_ptr(P_matrix))
 
+    # Rysowanie instancyjne - 10x10 obiektow
     glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 100)
 
 
@@ -268,11 +267,14 @@ def main():
     glfwSwapInterval(1)
 
     startup()
-    while not glfwWindowShouldClose(window):
-        render(glfwGetTime())
-        glfwSwapBuffers(window)
-        glfwPollEvents()
-    shutdown()
+    try:
+        while not glfwWindowShouldClose(window):
+            render(glfwGetTime())
+            glfwSwapBuffers(window)
+            glfwPollEvents()
+        shutdown()
+    except:
+        pass
 
     glfwTerminate()
 

@@ -200,9 +200,9 @@ def render(time):
 
     for i in range(10):
         for j in range(10):
+            glDrawArrays(GL_TRIANGLES, 0, 36)
             M_matrix = glm.translate(M_matrix, glm.vec3(1.0, 0.0, 0.0))
             glUniformMatrix4fv(M_location, 1, GL_FALSE, glm.value_ptr(M_matrix))
-            glDrawArrays(GL_TRIANGLES, 0, 36)
         M_matrix = glm.translate(M_matrix, glm.vec3(-10.0, 0.0, 0.0))
         glUniformMatrix4fv(M_location, 1, GL_FALSE, glm.value_ptr(M_matrix))
         M_matrix = glm.translate(M_matrix, glm.vec3(0.0, 1.0, 0.0))
@@ -250,11 +250,14 @@ def main():
     glfwSwapInterval(1)
 
     startup()
-    while not glfwWindowShouldClose(window):
-        render(glfwGetTime())
-        glfwSwapBuffers(window)
-        glfwPollEvents()
-    shutdown()
+    try:
+        while not glfwWindowShouldClose(window):
+            render(glfwGetTime())
+            glfwSwapBuffers(window)
+            glfwPollEvents()
+        shutdown()
+    except:
+        pass
 
     glfwTerminate()
 
